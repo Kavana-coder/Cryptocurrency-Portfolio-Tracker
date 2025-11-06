@@ -92,45 +92,6 @@ All major operations are handled server-side with data integrity guaranteed thro
 | `trg_after_update_crypto_price` | `AFTER UPDATE ON Crypto`       | Creates alerts for price changes ≥5% |
 | `trg_after_wallet_update`       | `AFTER UPDATE ON Wallet`       | Auto-updates user total balance      |
 
-💻 Backend Structure
-crypto-portfolio-backend/
-├── server.js                 # Main Express server
-├── db.js                     # MySQL connection (mysql2/promise)
-├── routes/
-│   ├── users.js              # User CRUD + auto wallet creation
-│   ├── wallet.js             # Wallet summary APIs
-│   ├── crypto.js             # Crypto prices + top 5 endpoint
-│   ├── alerts.js             # Fetch dynamic alerts
-│   ├── portfolio.js          # Portfolio aggregation
-│   ├── transactions.js       # Secure Buy/Sell transactions
-
-Run backend:
-cd crypto-portfolio-backend
-npm install
-npm run dev
-
-
-🌐 Frontend Structure
-crypto-portfolio-ui/
-├── src/
-│   ├── pages/
-│   │   ├── Dashboard.jsx
-│   │   ├── Wallets.jsx
-│   │   ├── Transactions.jsx
-│   │   ├── Portfolio.jsx
-│   │   ├── Cryptos.jsx
-│   │   ├── Alerts.jsx
-│   │   └── UsersPage.jsx
-│   ├── components/
-│   │   ├── Navbar.jsx
-│   │   └── Footer.jsx
-│   ├── App.jsx
-│   └── index.css
-
-Run frontend:
-cd crypto-portfolio-ui
-npm install
-npm start
 
 ✅ Backend runs on port 5000
 ✅ Frontend runs on port 3000
