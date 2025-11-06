@@ -228,7 +228,7 @@ npm start
 | Name                  | Role                 | Contribution                                                                                         |
 | --------------------- | -------------------- | ---------------------------------------------------------------------------------------------------- |
 | **Kavana H**          | Full-Stack Developer | Database Design, Backend API Development, Frontend Dashboard Integration, Alerts & Wallet Automation |
-| **Karname Sumedha S** | Frontend Developer   | UI Design, React Components, Styling, User Interaction, and Dashboard Enhancements                   |
+| **Karanam Sumedha ** | Frontend Developer   | UI Design, React Components, Styling, User Interaction, and Dashboard Enhancements                   |
 
 This project is licensed under the MIT License — feel free to fork and enhance.
 
