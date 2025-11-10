@@ -1,5 +1,5 @@
 -- ======================================================================
---   CRYPTOCURRENCY MANAGEMENT SYSTEM - FULL SQL SCRIPT
+--   CRYPTOCURRENCY PORTFOLIO
 -- ======================================================================
 
 -- 1️⃣ DATABASE CREATION
@@ -11,14 +11,15 @@ USE Cryptocurrency;
 -- ======================================================================
 
 -- Users
-CREATE TABLE Users (
-    UserID INT PRIMARY KEY AUTO_INCREMENT,
-    FirstName VARCHAR(50) NOT NULL,
-    LastName VARCHAR(50),
-    Email VARCHAR(100) UNIQUE NOT NULL,
+CREATE TABLE users (
+    UserID INT AUTO_INCREMENT PRIMARY KEY,
+    FirstName VARCHAR(100) NOT NULL,
+    LastName VARCHAR(100),
+    Email VARCHAR(255) UNIQUE NOT NULL,
     Password VARCHAR(255) NOT NULL,
     JoinDate DATE NOT NULL,
-
+    BalanceUSD DECIMAL(15, 8) DEFAULT 0.00000000,
+    Role ENUM('user', 'admin') DEFAULT 'user'
 );
 
 -- User Phone Numbers (1-to-many)
