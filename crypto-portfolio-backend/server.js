@@ -12,13 +12,19 @@ import authRoutes from "./routes/auth.js";
 dotenv.config();
 const app = express();
 
-// ✅ FIXED: CORS Configuration
-app.use(cors({
-  origin: ["http://localhost:3000", "http://localhost:5173"], // ✅ allow both
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-}));
+// ✅ CORS Configuration
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:5173",
+      "http://192.168.56.1:3000",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
@@ -32,8 +38,12 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 
 // 🩵 Health Check
-app.get("/", (req, res) => res.send("✅ Cryptocurrency Portfolio Tracker API is running..."));
+app.get("/", (req, res) =>
+  res.send("✅ Cryptocurrency Portfolio Tracker API is running...")
+);
 
 // ✅ Server Start
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () =>
+  console.log(`🚀 Server running on http://localhost:${PORT}`)
+);

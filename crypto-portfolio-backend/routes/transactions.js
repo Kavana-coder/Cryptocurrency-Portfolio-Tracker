@@ -1,31 +1,48 @@
 import express from "express";
 import db from "../db.js";
+import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// ✅ Get all transactions
-router.get("/", async (req, res) => {
+// ✅ Get transactions for the logged-in user
+router.get("/", verifyToken, async (req, res) => {
   try {
-    const [rows] = await db.query(`
+    const userId = req.user.userId;
+    const userRole = req.user.role;
+
+    let query = `
       SELECT 
         t.TxnID,
         DATE_FORMAT(t.TxnDate, '%Y-%m-%d %H:%i:%s') AS TxnDate,
         t.TxnType,
         c.Symbol AS CryptoSymbol,
         t.Quantity,
-        t.PriceAtTxn
+        t.PriceAtTxn,
+        w.WalletName
       FROM Transactions t
+      JOIN Wallet w ON t.WalletID = w.WalletID
       JOIN Crypto c ON t.CryptoID = c.CryptoID
-      ORDER BY t.TxnDate DESC
-    `);
+    `;
+
+    // Normal users only see their own
+    if (userRole !== "admin") {
+      query += ` WHERE w.UserID = ? ORDER BY t.TxnDate DESC`;
+      const [rows] = await db.query(query, [userId]);
+      return res.json(rows);
+    }
+
+    // Admins see all
+    query += ` ORDER BY t.TxnDate DESC`;
+    const [rows] = await db.query(query);
     res.json(rows);
+
   } catch (err) {
     console.error("Error fetching transactions:", err);
     res.status(500).json({ error: "Failed to fetch transactions" });
   }
 });
 
-// ✅ Add new transaction
+// ✅ Add new transaction (keep existing)
 router.post("/", async (req, res) => {
   try {
     const { walletId, cryptoId, quantity, price, type } = req.body;

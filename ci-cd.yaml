@@ -1,0 +1,98 @@
+# ============================================
+#        GITHUB ACTIONS CI–CD PIPELINE
+#        CRM Application (Node.js + React)
+# ============================================
+
+name: crm-app-ci-cd
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # -----------------------------
+  # 1. Continuous Integration
+  # -----------------------------
+  ci:
+    name: CI - Build, Test, Lint
+    runs-on: ubuntu-latest
+
+    services:
+      mongo:
+        image: mongo:6
+        ports: [ "27017:27017" ]
+        options: >-
+          --health-cmd="mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval=5s
+          --health-timeout=10s
+          --health-retries=5
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Lint Code
+        run: npm run lint
+
+      - name: Run Unit Tests
+        run: npm test -- --watch=false --runInBand
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: crm-build
+          path: ./dist
+
+  # -----------------------------
+  # 2. Continuous Deployment
+  # -----------------------------
+  cd:
+    name: CD - Deploy to Production
+    needs: [ ci ]
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: crm-build
+
+      - name: Copy Build to Server via SSH
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "dist/*"
+          target: "/var/www/crm-app/"
+
+      - name: Restart PM2 on Server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /var/www/crm-app
+            npm install --production
+            pm2 restart crm-app || pm2 start server.js --name crm-app
+            pm2 save
+
+# ============================================
+#  END OF CI-CD PIPELINE
+# ============================================
